@@ -1,0 +1,28 @@
+{
+  "name": "usergt",
+  "version": "0.0.1",
+  "description": "user database queries",
+  "main": "lib/index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/propadata/usergt.git"
+  },
+  "keywords": [
+    "user",
+    "database",
+    "query",
+    "rethinkdb"
+  ],
+  "author": "Jon Swenson",
+  "license": "BSD-3-Clause",
+  "bugs": {
+    "url": "https://github.com/propadata/usergt/issues"
+  },
+  "homepage": "https://github.com/propadata/usergt#readme"
+}
