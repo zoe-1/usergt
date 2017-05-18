@@ -1,28 +1,40 @@
 {
   "name": "usergt",
   "version": "0.0.1",
-  "description": "user database queries",
+  "description": "rethinkdb penseur user db logic",
   "main": "lib/index.js",
   "directories": {
     "test": "test"
   },
   "scripts": {
-    "test": "test"
+    "test": "jest --coverage"
   },
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/propadata/usergt.git"
   },
   "keywords": [
+    "rethinkdb",
+    "penseur",
     "user",
     "database",
-    "query",
-    "rethinkdb"
+    "query"
   ],
   "author": "Jon Swenson",
   "license": "BSD-3-Clause",
   "bugs": {
     "url": "https://github.com/propadata/usergt/issues"
   },
-  "homepage": "https://github.com/propadata/usergt#readme"
+  "homepage": "https://github.com/propadata/usergt#readme",
+  "dependencies": {
+    "bcrypt": "1.x.x",
+    "boom": "4.x.x",
+    "hoek": "4.x.x",
+    "items": "2.x.x",
+    "joi": "10.x.x",
+    "penseur": "7.x.x"
+  },
+  "devDependencies": {
+    "jest": "20.x.x"
+  }
 }
