@@ -42,7 +42,7 @@ describe('authenticate', () => {
             usergt.authenticate(username, password, (err, authenticUserRecord) => {
             
                 ConfigObject.purge = 'on';
-                console.log('authenticUserRecord: ' + JSON.stringify(authenticUserRecord, null, '\t'));
+                // console.log('authenticUserRecord: ' + JSON.stringify(authenticUserRecord, null, '\t'));
                 return done();
             });
         });
