@@ -47,7 +47,6 @@ describe('lib/index', () => {
 
     it('start usergt - create loaded', (done) => {
 
-        console.log(JSON.stringify(Config));
         const usergt = new User.Gt(Config);
 
         const newUserRecord = {
@@ -59,8 +58,6 @@ describe('lib/index', () => {
 
         return usergt.create(newUserRecord, (err, result) => {
         
-            console.log(JSON.stringify(err, null, '\t'));
-            console.log(JSON.stringify(result, null, '\t'));
             expect(err).toBe(null);
             expect(result.length).toBe(36);
             return done();
