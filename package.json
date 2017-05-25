@@ -7,7 +7,8 @@
     "test": "test"
   },
   "scripts": {
-    "test": "jest --coverage --runInBand"
+    "test": "jest --coverage --runInBand",
+    "focus": "jest __tests__/gt/index.test.js --runInBand"
   },
   "repository": {
     "type": "git",
