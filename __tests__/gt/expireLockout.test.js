@@ -10,10 +10,7 @@ const Config = {
     connection: {
         host: 'localhost',
         port: 28015
-    },
-    state: 'live',      //  live | dev defaults live.
-    purge: 'on',        //  default is 'off'.
-    admin: true         //  Boolean default false.
+    }
 };
 
 const internals = {};
