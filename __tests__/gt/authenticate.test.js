@@ -473,11 +473,74 @@ describe('coverage', () => {
         });
     });
 
-    // it('Query.user.setLockout db.user.update failure on lockout', (done) => {
+    it('fail to set lockout on 10th bad attempt', (done) => {
 
-    //     // return Query.user.setLockout.call(this, userDocument.id, (err, userDocument) => {
+        const User = require('../../lib');
 
-    //     // return usergt.db.close(done);
+        const usergt = new User.Gt(Config);
 
-    // });
+        usergt.establish((err) => {
+
+            // ten bad login attempts
+            // mock failure to set lockout on 10th bad attempt.
+
+            const username = 'zoelogic';
+            const password = 'paSS-w0rd_4t--t';
+
+            const badAttempt = function (item, next, i) {
+
+                usergt.authenticate(username, password, (err, authenticatedUserRecord) => {
+
+
+                    if (item >= 10) {
+                        expect(err.output.statusCode).toBe(500);
+                        expect(err.output.payload.error).toBe('Internal Server Error');
+                        expect(err.message).toBe('Query.user.setLockout - db.user.update - failed to set lockout');
+                    } else {
+                        expect(err.output.statusCode).toBe(401);
+                        expect(err.output.payload.error).toBe('Unauthorized');
+                        expect(err.message).toBe('password incorrect');
+                    }
+
+                    if (item === 9) {
+
+                        // set mock for next update which sets lockout
+                    
+                        const original = usergt.db.user.update;
+
+                        const mockFail = function (id, update, callback) {
+                        
+                            return callback(new Error('mock failure of second update'));
+                        };
+
+                        usergt.db.user.update = jest.fn()
+                            .mockImplementationOnce(original)
+                            .mockImplementationOnce(mockFail);
+                    }
+
+                    next();
+                });
+            };
+
+            Items.serial([1,2,3,4,5,6,7,8,9,10], badAttempt, (err) => {
+
+                expect(err).toBe(undefined);
+
+                User.Query.user.findByUsername.call(usergt, 'zoelogic', (err, userRecord) => {
+
+                    // lockUntil value should be twenty four hours in the future.
+                    // if lockUntil < now then the lockout is expired.
+                    // Since previous mocked failure to set lockout, the lockUntil
+                    // value is < now.
+
+                    const now = Date.now();
+
+                    expect(userRecord.lockUntil).toBeLessThan(now);
+                    expect(userRecord.loginAttempts).toBe(10);
+
+                    return usergt.db.close(done);
+                });
+            });
+        });
+     });
 });
