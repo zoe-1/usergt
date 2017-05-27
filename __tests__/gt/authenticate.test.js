@@ -423,7 +423,7 @@ describe('internal failures', () => {
 
                 expect(err.output.statusCode).toBe(500);
                 expect(err.output.payload.error).toBe('Internal Server Error');
-                expect(err.message).toBe('db.user.update - incrementLoginAttempt failed');
+                expect(err.message).toBe('incrementLoginAttempt - db.user.update - failed to update userdoc');
                 return usergt.db.close(done);
             });
         });
@@ -545,6 +545,270 @@ describe('internal failures', () => {
                 expect(err.output.payload.error).toBe('Internal Server Error');
                 expect(err.message).toBe('db connection not established');
                 return usergt.db.close(done);
+            });
+        });
+    });
+
+    it('incrementLoginAttempt  - connection dropped and not reconnected yet', (done) => {
+
+        const User = require('../../lib');
+
+        const usergt = new User.Gt(Config);
+
+        usergt.establish((err) => {
+
+            usergt.connected = false;  // mocks disconnected setting
+
+            User.Query.user.incrementLoginAttempt.call(usergt, 33, (err, userDocument) => {
+                
+                expect(err.output.statusCode).toBe(500);
+                expect(err.output.payload.error).toBe('Internal Server Error');
+                expect(err.message).toBe('db connection not established');
+                return usergt.db.close(done); 
+            });
+        });
+    });
+
+    it('incrementLoginAttempt  - db.user.update failure', (done) => {
+
+        const User = require('../../lib');
+
+        const usergt = new User.Gt(Config);
+
+        usergt.establish((err) => {
+
+            const original = usergt.db.user.update;
+
+            const mockFail = (userId, updateValue, callback) => {
+            
+                usergt.db.user.udpate = original;
+                return callback(new Error('mock db.user.update failure'));
+            };
+
+            usergt.db.user.update = mockFail;
+
+            User.Query.user.incrementLoginAttempt.call(usergt, 33, (err, userDocument) => {
+                
+                expect(err.output.statusCode).toBe(500);
+                expect(err.output.payload.error).toBe('Internal Server Error');
+                expect(err.message).toBe('incrementLoginAttempt - db.user.update - failed to update userdoc');
+                return usergt.db.close(done); 
+            });
+        });
+    });
+
+    it('incrementLoginAttempt  - fails to get userDoc after successful update', (done) => {
+
+        const User = require('../../lib');
+
+        const usergt = new User.Gt(Config);
+
+        usergt.establish((err) => {
+
+            const newUserRecord = {
+                username: 'boomlogic',
+                email: 'boom@zoelogic.com',
+                password: 'paSS-w0rd_4test',
+                scope: ['user']
+            };
+
+            usergt.create(newUserRecord, (err, newUserId) => {
+
+                expect(err).toBe(null);
+
+                const original = usergt.db.user.get;
+
+                const mockFail = (userId, callback) => {
+                
+                    usergt.db.user.get = original;
+                    return callback(new Error('mock db.user.get failure'));
+                };
+
+                usergt.db.user.get = mockFail;
+
+                User.Query.user.incrementLoginAttempt.call(usergt, newUserId, (err, userDocument) => {
+                    
+                    expect(err.output.statusCode).toBe(500);
+                    expect(err.output.payload.error).toBe('Internal Server Error');
+                    expect(err.message).toBe('incrementLoginAttempt - db.user.get - failed to get userdoc');
+                    return usergt.db.close(done); 
+                });
+            });
+        });
+    });
+
+    it('resetLoginAttempt  - connection dropped and not reconnected yet', (done) => {
+
+        const User = require('../../lib');
+
+        const usergt = new User.Gt(Config);
+
+        usergt.establish((err) => {
+
+            usergt.connected = false;  // mocks disconnected setting
+
+            User.Query.user.resetLoginAttempt.call(usergt, 33, (err, userDocument) => {
+                
+                expect(err.output.statusCode).toBe(500);
+                expect(err.output.payload.error).toBe('Internal Server Error');
+                expect(err.message).toBe('db connection not established');
+                return usergt.db.close(done); 
+            });
+        });
+    });
+
+    it('resetLoginAttempt  - db.user.update failure', (done) => {
+
+        const User = require('../../lib');
+
+        const usergt = new User.Gt(Config);
+
+        usergt.establish((err) => {
+
+            const original = usergt.db.user.update;
+
+            const mockFail = (userId, updateValue, callback) => {
+            
+                usergt.db.user.udpate = original;
+                return callback(new Error('mock db.user.update failure'));
+            };
+
+            usergt.db.user.update = mockFail;
+
+            User.Query.user.resetLoginAttempt.call(usergt, 33, (err, userDocument) => {
+                
+                expect(err.output.statusCode).toBe(500);
+                expect(err.output.payload.error).toBe('Internal Server Error');
+                expect(err.message).toBe('resetLoginAttempt - db.user.update - set loginAttempts to zero failed');
+                return usergt.db.close(done); 
+            });
+        });
+    });
+
+    it('resetLoginAttempt  - db.user.get - fails to get userDoc after successful update', (done) => {
+
+        const User = require('../../lib');
+
+        const usergt = new User.Gt(Config);
+
+        usergt.establish((err) => {
+
+            const newUserRecord = {
+                username: 'boomlogic',
+                email: 'boom@zoelogic.com',
+                password: 'paSS-w0rd_4test',
+                scope: ['user']
+            };
+
+            usergt.create(newUserRecord, (err, newUserId) => {
+
+                expect(err).toBe(null);
+
+                const original = usergt.db.user.get;
+
+                const mockFail = (userId, callback) => {
+                
+                    usergt.db.user.get = original;
+                    return callback(new Error('mock db.user.get failure'));
+                };
+
+                usergt.db.user.get = mockFail;
+
+                User.Query.user.resetLoginAttempt.call(usergt, newUserId, (err, userDocument) => {
+                    
+                    expect(err.output.statusCode).toBe(500);
+                    expect(err.output.payload.error).toBe('Internal Server Error');
+                    expect(err.message).toBe('resetLoginAttempt - db.user.get - failed to get userdoc');
+                    return usergt.db.close(done); 
+                });
+            });
+        });
+    });
+
+    it('setLockout  - connection dropped and not reconnected yet', (done) => {
+
+        const User = require('../../lib');
+
+        const usergt = new User.Gt(Config);
+
+        usergt.establish((err) => {
+
+            usergt.connected = false;  // mocks disconnected setting
+
+            User.Query.user.setLockout.call(usergt, 33, (err, userDocument) => {
+                
+                expect(err.output.statusCode).toBe(500);
+                expect(err.output.payload.error).toBe('Internal Server Error');
+                expect(err.message).toBe('db connection not established');
+                return usergt.db.close(done); 
+            });
+        });
+    });
+
+    it('setLockout  - db.user.update failure', (done) => {
+
+        const User = require('../../lib');
+
+        const usergt = new User.Gt(Config);
+
+        usergt.establish((err) => {
+
+            const original = usergt.db.user.update;
+
+            const mockFail = (userId, updateValue, callback) => {
+            
+                usergt.db.user.udpate = original;
+                return callback(new Error('mock db.user.update failure'));
+            };
+
+            usergt.db.user.update = mockFail;
+
+            User.Query.user.setLockout.call(usergt, 33, (err, userDocument) => {
+                
+                expect(err.output.statusCode).toBe(500);
+                expect(err.output.payload.error).toBe('Internal Server Error');
+                expect(err.message).toBe('Query.user.setLockout - db.user.update - failed to set lockout');
+                return usergt.db.close(done); 
+            });
+        });
+    });
+
+    it('setLockout  - db.user.get - fails to get userDoc after setting lockout', (done) => {
+
+        const User = require('../../lib');
+
+        const usergt = new User.Gt(Config);
+
+        usergt.establish((err) => {
+
+            const newUserRecord = {
+                username: 'boomlogic',
+                email: 'boom@zoelogic.com',
+                password: 'paSS-w0rd_4test',
+                scope: ['user']
+            };
+
+            usergt.create(newUserRecord, (err, newUserId) => {
+
+                expect(err).toBe(null);
+
+                const original = usergt.db.user.get;
+
+                const mockFail = (userId, callback) => {
+                
+                    usergt.db.user.get = original;
+                    return callback(new Error('mock db.user.get failure'));
+                };
+
+                usergt.db.user.get = mockFail;
+
+                User.Query.user.setLockout.call(usergt, newUserId, (err, userDocument) => {
+                    
+                    expect(err.output.statusCode).toBe(500);
+                    expect(err.output.payload.error).toBe('Internal Server Error');
+                    expect(err.message).toBe('Query.user.setLockout - db.user.get - failed to get userDocument');
+                    return usergt.db.close(done); 
+                });
             });
         });
     });
