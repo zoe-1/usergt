@@ -162,54 +162,6 @@ describe('authenticate', () => {
         });
     });
 
-    it('Query.user.findByUsername db.user.query failure', (done) => {
-
-        Config.connection.test = true;
-
-        const usergt = new Usergt.Gt(Config);
-
-        usergt.establish((err) => {
-
-            usergt.db.disable('user', 'query', { value: new Error('query failed') });
-
-            const username = 'zoelogic';
-            const password = 'paSS-w0rd_4test';
-
-            usergt.authenticate(username, password, (err, authenticatedUserRecord) => {
-
-                delete Config.connection.test;
-                usergt.db.enable('user', 'query');
-
-                expect(err.output.statusCode).toBe(500);
-                expect(err.output.payload.error).toBe('Internal Server Error');
-                expect(err.message).toBe('db.user.query failed');
-                return usergt.db.close(done);
-            });
-        });
-    });
-
-    it('findByUsername  - connection dropped and not reconnected yet', (done) => {
-
-        const User = require('../../lib');
-
-        const usergt = new User.Gt(Config);
-
-        usergt.establish((err) => {
-
-            usergt.connected = false;  // mocks disconnected setting
-
-            const username = 'zoelogic';
-            const password = 'paSS-w0rd_4test';
-
-            usergt.authenticate(username, password, (err, authenticatedUserRecord) => {
-
-                expect(err.output.statusCode).toBe(500);
-                expect(err.output.payload.error).toBe('Internal Server Error');
-                expect(err.message).toBe('db connection not established');
-                return usergt.db.close(done);
-            });
-        });
-    });
 });
 
 
@@ -325,7 +277,11 @@ describe('lockout', () => {
         });
     });
 
-    it('authenticate after lockout expiration - mock Query.user.resetLoginAttempt failure', (done) => {
+    it('resetLoginAttempt fails after lockout expired', (done) => {
+
+        // After lockout has expired (previous test expires the lockout)
+        // authentication attempt is made
+        // however, Query.user.resetLoginAttempt fails 
 
         const User = require('../../lib');
 
@@ -380,7 +336,7 @@ describe('lockout', () => {
     });
 });
 
-describe('coverage', () => {
+describe('internal failures', () => {
 
     beforeEach((done) => {
 
@@ -418,7 +374,7 @@ describe('coverage', () => {
         });
     });
 
-    it('Query.user.resetLoginAttempt failure on passing authentication attempt', (done) => {
+    it('resetLoginAttempt failure on successful authentication', (done) => {
 
         const User = require('../../lib');
 
@@ -447,7 +403,7 @@ describe('coverage', () => {
         });
     });
 
-    it('Query.user.incrementLoginAttempt db.user.update failure', (done) => {
+    it('incrementLoginAttempt db.user.update failure', (done) => {
 
         Config.connection.test = true;
 
@@ -543,4 +499,53 @@ describe('coverage', () => {
             });
         });
      });
+
+    it('findByUsername db.user.query failure', (done) => {
+
+        Config.connection.test = true;
+
+        const usergt = new Usergt.Gt(Config);
+
+        usergt.establish((err) => {
+
+            usergt.db.disable('user', 'query', { value: new Error('query failed') });
+
+            const username = 'zoelogic';
+            const password = 'paSS-w0rd_4test';
+
+            usergt.authenticate(username, password, (err, authenticatedUserRecord) => {
+
+                delete Config.connection.test;
+                usergt.db.enable('user', 'query');
+
+                expect(err.output.statusCode).toBe(500);
+                expect(err.output.payload.error).toBe('Internal Server Error');
+                expect(err.message).toBe('db.user.query failed');
+                return usergt.db.close(done);
+            });
+        });
+    });
+
+    it('findByUsername  - connection dropped and not reconnected yet', (done) => {
+
+        const User = require('../../lib');
+
+        const usergt = new User.Gt(Config);
+
+        usergt.establish((err) => {
+
+            usergt.connected = false;  // mocks disconnected setting
+
+            const username = 'zoelogic';
+            const password = 'paSS-w0rd_4test';
+
+            usergt.authenticate(username, password, (err, authenticatedUserRecord) => {
+
+                expect(err.output.statusCode).toBe(500);
+                expect(err.output.payload.error).toBe('Internal Server Error');
+                expect(err.message).toBe('db connection not established');
+                return usergt.db.close(done);
+            });
+        });
+    });
 });
