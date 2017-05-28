@@ -1,6 +1,6 @@
 # usergt api
 
-#### `new Usergt.gt(configs)`
+#### `new User.Gt(configs)`
 
 Construct instance of usergt<br/>
 
@@ -40,6 +40,7 @@ Construct instance of usergt<br/>
 
   usergt.establish((err) => {
   
+
         expect(err).toBe(null);
 
         const newUserRecord = {
@@ -109,9 +110,9 @@ usergt methods use to make Rethinkdb queries. Thanks to penseur the connection i
   - `err` isBoom if error else `null` upon success.
 * Example
 ```
-const Usergt = require('./lib');
+const User = require('./lib');
 
-const usergt = new Usergt.Gt(Config);
+const usergt = new User.Gt(Config);
 
 usergt.establish((err) => {
 
@@ -176,9 +177,11 @@ To see all utils functions: `./lib/user/utils`. Each function is stored in it's 
 ```
     // so you can use penseur's enable() and disable() in your tests as below.
 
+    const User = require('./path/to/usergt/lib');
+
     Config.connection.test = true;
 
-    const usergt = new Usergt.Gt(Config);
+    const usergt = new User.Gt(Config);
 
     usergt.establish((err) => {
 
@@ -199,3 +202,28 @@ To see all utils functions: `./lib/user/utils`. Each function is stored in it's 
         });
     });
 ```
+*  @research design pattern issue 
+   - after running establish() penseur creates a rethinkdb connection. 
+   - rethinkdb connections are used to run queries.
+   - each rethinkdb connection has a default database to use in it's lifetime.
+   - rethinkdb connections can be used to execute multiple queries.
+   - penseur reconnects the database connection if it drops. 
+   - penseur allows for onDisconnect() and onConnect() functions to respond to 
+     rethinkdb connections dropping and connecting.
+   - the above means usergt can use one connection to make all db queries.
+     if the connection drops penseur will reconnect. In case a drop occurs,
+     we utilize penseurs onDisconnect() which watches for disconnects and 
+     sets the `connected` property to false when a disconnect occurs.  
+     All queries check for the `connected = false` flag and will not execute if `connected` is false.
+     onConnect() function then executes when a reconnection is made and the onConnect() sets
+     the `connected` value to true. This gives queries the green light to execute.
+   - if analysis above is correct, after executing usergt.establish() one time, store the usergt object in a singleton
+     application wide variable. Then, consume usergt methods anywhere in the application without re-running the 
+     establish command. The connection will persist to all methods.
+
+Sources: <br/>
+* [ten minute guide](https://rethinkdb.com/docs/guide/javascript/)
+* [connect docs](https://rethinkdb.com/api/javascript/connect/)
+* [reconnect docs](https://rethinkdb.com/api/javascript/reconnect/)
+* [penseur db tests](https://github.com/hueniverse/penseur/blob/master/test/db.js)
+  - See onConnect() and onDisconnect() test named: 'reconnects automatically'.
