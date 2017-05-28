@@ -1,8 +1,9 @@
 # usergt
 
-user database query logic.
+manage user data logic
+[Rethinkdb](https://rethinkdb.com/), [Penseur](https://github.com/hueniverse/penseur)
 
-(API)[./API.md]
+[API](./API.md)
 
 ### Brute force protection:
 
