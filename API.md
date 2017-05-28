@@ -136,4 +136,66 @@ usergt.establish((err) => {
 * `callback(err)`
   - `err` isBoom if error else `null` upon success.
 
+### `Query Object`
 
+usergt exposes query functions through the Query object. This allows for functions to be directly acessed or mocked.<br/>
+To see all query functions: `./lib/user/query`. Each function is stored in it's own file.<br/>
+```
+    const User = require('./path/to/usergt/lib');
+    User.Query.user.[function_name]` provides access to the function. 
+
+    // Example mock from tests below:
+
+    const original = User.Query.user.resetLoginAttempt;
+
+    User.Query.user.resetLoginAttempt = function (userId, callback) {
+
+        User.Query.user.resetLoginAttempt = original;
+        return callback(new Error('mock resetLoginAttempt failure'), null); 
+    }; 
+```
+
+### `utils Object`
+
+usergt exposes query functions through the utils object. This allows for functions to be directly acessed or mocked.<br/>
+To see all utils functions: `./lib/user/utils`. Each function is stored in it's own file.<br/>
+```
+    const User = require('./path/to/usergt/lib');
+    User.Query.user.[function_name]` provides access to the function. 
+```
+
+### `Penseur Object`
+
+* By default penseur is configured to keep connected to rethinkdb. If the connection is dropped
+  penseur reconnects. usergt makes the connection to db using penseur when establish() is executed.
+  If the connection drops, the `usergt.connected` key is set to false and queries will return error messages saying
+  the database is not connected. When reconnected `usergt.connected` is set to true and queries are executed.
+
+* Below is an example of exposing the penseur object `usergt.db` when building tests.
+
+```
+    // so you can use penseur's enable() and disable() in your tests as below.
+
+    Config.connection.test = true;
+
+    const usergt = new Usergt.Gt(Config);
+
+    usergt.establish((err) => {
+
+        usergt.db.disable('user', 'update', { value: new Error('update failed') });
+
+        const username = 'zoelogic';
+        const password = 'paSS-w0rd_4t--t';
+
+        usergt.authenticate(username, password, (err, authenticatedUserRecord) => {
+
+            delete Config.connection.test;
+            usergt.db.enable('user', 'update');
+
+            expect(err.output.statusCode).toBe(500);
+            expect(err.output.payload.error).toBe('Internal Server Error');
+            expect(err.message).toBe('incrementLoginAttempt - db.user.update - failed to update userdoc');
+            return usergt.db.close(done);
+        });
+    });
+```
