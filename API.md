@@ -4,14 +4,8 @@
 
 Construct instance of usergt<br/>
 
-* Example<br/>
+* `configs`
   ```
-  // include usergt
-
-  const User = ('path/to/usergt/lib');
-
-  // set configs
-
   const Config = {
     dbname: String database name required. ex) 'usergt',
     connection: {
@@ -24,6 +18,23 @@ Construct instance of usergt<br/>
         reconnectTimeout: Number min(1) allows (false) defaults to 100)
     }
   } 
+  ```
+
+* Example<br/>
+  ```
+  // include usergt
+
+  const User = ('path/to/usergt/lib');
+
+  // set configs
+
+  const Config = {
+      dbname: 'usergt',
+      connection: {
+          host: 'localhost',
+          port: 28015
+      }
+  };
 
   const usergt = User.gt(Config);
 
