@@ -1,5 +1,52 @@
 # usergt api
 
+#### `new Usergt.gt(configs)`
+
+Construct instance of usergt<br/>
+
+* Example<br/>
+  ```
+  // include usergt
+
+  const User = ('path/to/usergt/lib');
+
+  // set configs
+
+  const Config = {
+    dbname: String database name required. ex) 'usergt',
+    connection: {
+        host: String, defaults to 'localhost',
+        port: Number default is 28015,
+        test: Boolean optional,
+        user: String defaults to 'admin' optional,
+        password: String optional,
+        timeout: Number defaults to 20 optional,
+        reconnectTimeout: Number min(1) allows (false) defaults to 100)
+    }
+  } 
+
+  const usergt = User.gt(Config);
+
+  usergt.establish((err) => {
+  
+        expect(err).toBe(null);
+
+        const newUserRecord = {
+            username: 'zoelogic',
+            email: 'boom@zoelogic.com',
+            password: 'paSS-w0rd_4test',
+            scope: ['user']
+        };
+
+        usergt.create(newUserRecord, (err, newUserId) => {
+
+            expect(err).toBe(null);
+            expect(newUserId.length).toBe(36);
+            usergt.db.close(done);
+        });
+  });
+  ```
+
 #### `authenticate(username, password, callback)`
 * `username` of existing user.
 * `password` of existing user.
