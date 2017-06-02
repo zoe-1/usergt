@@ -8,7 +8,8 @@
   },
   "scripts": {
     "test": "jest --coverage --runInBand",
-    "focus": "jest __tests__/gt/authenticate.test.js --runInBand"
+    "focus2": "jest __tests__/gt/authenticate.test.js --runInBand",
+    "focus": "jest __tests__/boom.test.js --runInBand"
   },
   "repository": {
     "type": "git",
