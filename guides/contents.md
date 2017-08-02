@@ -40,3 +40,7 @@
 * [Assignment8 Requirements](../assignments/a0.0.8.md)
 * solution `git checkout assignment8`
 
+### 9 *route level* extension points to the request lifecycle 
+* [Assignment9 Requirements](../assignments/a0.0.9.md)
+* solution `git checkout assignment9`
+
