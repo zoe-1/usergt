@@ -9,7 +9,7 @@ Each incoming request passes through [six general pre-defined steps](https://gis
 ### pre-defined steps
 
 The request lifecycle is pre-defined by the hapi framework.<br/>
-The steps in the above diagram marked with a single asterisk (*) are the pre-defined or internal steps. 
+The steps in the above diagram marked with a single asterisk (*) are the pre-defined steps. 
 These steps do not operate in a vacuum. They respond to how you configure the server, connections, and routes. 
 
 
@@ -64,15 +64,15 @@ Hapi gives the developer the ability to extend the request lifecycle on:
 server connections, plugins, and routes. Plus, the added extensions (events) can be configured to execute at one of the
 six different extension points in the request lifecycle.  At the completion of [assignment9](../assignments/a0.0.9.md) our project has ***connection-level*** and ***route level***  extensions.
 
-### Note: 
+### Lifecycle Details: 
 [hapi lifecycle documentation](https://hapijs.com/api#request-lifecycle) shows there are fifteen pre-defined steps in the lifecycle.
 Those steps can be grouped into six general steps. Below Lifecycle Details Diagram shows all fifteen steps 
-grouped into the six categories used in diagramA.  Or, checkout the [documenation](https://hapijs.com/api#request-lifecycle).
+grouped into the six categories used in the previous diagram.  Or, checkout the [documenation](https://hapijs.com/api#request-lifecycle).
 ### Lifecycle Details Diagram
-![LifeCycleDetails](../assets/images/lifecycleDetails.png)
+![LifeCycleDetails](../assets/images/lifecycleDetailsDiagram.png)
 
 ### References:
-* Matt Harrison in Mannings hapijs book also groups the fifteen predefined steps into six group.
+* I believe Matt Harrison in Mannings hapijs book also groups the fifteen predefined steps into six groups.
   Think @AdriVanHoudt references this work [here](https://gist.github.com/AdriVanHoudt/562f537ba48301bac76fb3bc42def5b3)
 * Documentation 
   - [lifecycle](https://hapijs.com/api#request-lifecycle)
