@@ -1,4 +1,4 @@
-### Request Lifecycle Big Picture 
+### Introduction to the Request Lifecycle
 
 The request lifecycle determines how requests are handled by the framework.
 Each incoming request passes through six general pre-defined steps. These six steps have optional extension points.
@@ -7,9 +7,9 @@ Each incoming request passes through six general pre-defined steps. These six st
 ![LifeCycleDiagram](../assets/images/lifecycleDiagram.png)
 
 
-[hapi lifecycle documentation](https://hapijs.com/api#request-lifecycle) shows there are fifteen pre-defined steps in the lifecycle.
-Those steps can be grouped into six general steps which the previous diagram does. To give another perspective, the below diagram shows 
-details for all fifteen steps and the six general steps.  
+The six general pre-defined steps do not operate in a vacuum. They respond to how you configure the server, connections, and routes. 
+[hapi lifecycle documentation](https://hapijs.com/api#request-lifecycle) gives more details and describes fifteen pre-defined steps.  
+The below diagram shows all fifteen pre-defined steps, the six general pre-defined steps, and the six optional extension points.  
 
 ### Lifecycle Details Diagram
 ![LifeCycleDetails](../assets/images/lifecycleDetailsDiagram.png)
@@ -18,11 +18,6 @@ details for all fifteen steps and the six general steps.
   Seems  @AdriVanHoudt references Harrison's work [here](https://gist.github.com/AdriVanHoudt/562f537ba48301bac76fb3bc42def5b3)
 
 
-### pre-defined steps
-
-The request lifecycle is pre-defined by the hapi framework.<br/>
-The steps in the first diagram marked with a single asterisk (*) are the pre-defined steps. 
-These steps do not operate in a vacuum. They respond to how you configure the server, connections, and routes. 
 
 
 ### extending the lifecycle
@@ -41,8 +36,8 @@ Find the six request lifecycle extension points in the first diagram.  They are:
 An extension point is a stage in the request lifecycle where extensions can be added.
 Extension points are hooks that provide an interface for programmers to add custom code 
 to a specific step in the lifecycle. hapi refers to the added custom code as ***events***.
-There only two extension points guaranteed to be called with every request. The first diagram marks 
-extensions guaranteed to be called with double asterisks (**).
+There are only two extension points guaranteed to be called with every request. The first diagram marks 
+them with double asterisks (**).
 
 
 ### What is an extension? 
@@ -55,11 +50,12 @@ An extension is registered using [server.ext(events)](https://hapijs.com/api#ser
   * method - a function or an array of functions to be executed at the specified point in the lifecycle. 
   * options (optional object)
 
-Notes: 
+Note: 
 * Not just one event but an array of events can be added at an extension point with [server.ext(events)](https://hapijs.com/api#serverextevents).
 * For an example of using [route options](https://hapijs.com/api#route-options) to add an extension see [assignment9](../assignments/a0.0.9.md).
 
 ### Three levels of extensions:
+@todo write gentle introduction to extension-levels.
 * **connection-level**<br/>
   Extends the lifecycle of all requests made to any route on a specific server connection.<br/>
   Our project has two connections:
@@ -73,11 +69,11 @@ Notes:
 * **route-level**<br/>
   Extends the lifecycle of requests made to a specific route.
 
-### Beauty of hapi request lifecycle
+### Beauty of the hapi request lifecycle
 Hapi gives the developer the ability to extend the request lifecycle on:  
-server connections, plugins, and routes. Plus, the added extensions (events) are configured to execute at one of the
+server connections, plugins, and routes. Plus, the added extension's (events) are configured to execute at one of the
 six different extension points in the request lifecycle.  At the completion of [assignment9](../assignments/a0.0.9.md) our project has ***connection-level*** and ***route level***  extensions
-which extend the `onRequest` and `onPreResponse` extension points.
+which extend the request lifecycle at the `onRequest` and `onPreResponse` extension points.
 
 
 ### References:
