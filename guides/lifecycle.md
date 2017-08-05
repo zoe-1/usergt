@@ -7,7 +7,7 @@ Only two extension points are guaranteed to be called with every request. ([sour
 ### What is an extension point? 
   An extension point is a stage in the request lifecycle where extensions can be added.
   Extension points are hooks that provide an interface for programmers to add custom code 
-  to a specific step in the lifecycle. hapi refers to the custom code to be added as ***events***.
+  to a specific step in the lifecycle. hapi refers to the added custom code as ***events***.
   The six possible extension points are: 
   * 'onRequest'
     - **always called**
@@ -49,6 +49,8 @@ Note: not just one event but an array of events can be added at an extension poi
 Hapi gives the developer the ability to extend the request lifecycle of requests made to:  
 a server connection, plugin, or specific route. Plus, the added extensions (events) can be configured to execute at one of the
 six different extension points in the request lifecycle.  At the completion of [assignment9](../assignments/a0.0.9.md) our project has ***connection-level*** and ***route level***  extensions.
+
+
 
 ### References:
 * Documentation 
