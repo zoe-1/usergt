@@ -9,7 +9,7 @@ Each incoming request passes through six general pre-defined steps. These six st
 
 [hapi lifecycle documentation](https://hapijs.com/api#request-lifecycle) shows there are fifteen pre-defined steps in the lifecycle.
 Those steps can be grouped into six general steps which the previous diagram does. To give another perspective, the below diagram shows 
-details for all fifteen steps.  
+details for all fifteen steps and the six general steps.  
 
 ### Lifecycle Details Diagram
 ![LifeCycleDetails](../assets/images/lifecycleDetailsDiagram.png)
@@ -55,7 +55,9 @@ An extension is registered using [server.ext(events)](https://hapijs.com/api#ser
   * method - a function or an array of functions to be executed at the specified point in the lifecycle. 
   * options (optional object)
 
-Note: not just one event but an array of events can be added at an extension point with [server.ext(events)](https://hapijs.com/api#serverextevents).
+Notes: 
+* Not just one event but an array of events can be added at an extension point with [server.ext(events)](https://hapijs.com/api#serverextevents).
+* For an example of using [route options](https://hapijs.com/api#route-options) to add an extension see [assignment9](../assignments/a0.0.9.md).
 
 ### Three levels of extensions:
 * **connection-level**<br/>
