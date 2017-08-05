@@ -1,22 +1,34 @@
 ### Request Lifecycle Big Picture 
 
 The request lifecycle determines how requests are handled by the framework.
-Each incoming request passes through [six general pre-defined steps](https://gist.github.com/AdriVanHoudt/562f537ba48301bac76fb3bc42def5b3) , along with six optional extensions.
+Each incoming request passes through six general pre-defined steps. These six steps have optional extension points.
 
-### diagramA
+### Lifecycle Overview 
 ![LifeCycleDiagram](../assets/images/lifecycleDiagram.png)
+
+
+[hapi lifecycle documentation](https://hapijs.com/api#request-lifecycle) shows there are fifteen pre-defined steps in the lifecycle.
+Those steps can be grouped into six general steps which the previous diagram does. To give another perspective, the below diagram shows 
+details for all fifteen steps.  
+
+### Lifecycle Details Diagram
+![LifeCycleDetails](../assets/images/lifecycleDetailsDiagram.png)
+
+* Believe Matt Harrison 's [hapijs book](https://www.manning.com/books/hapi-js-in-action) also groups the fifteen predefined steps into six groups.
+  Seems  @AdriVanHoudt references Harrison's work [here](https://gist.github.com/AdriVanHoudt/562f537ba48301bac76fb3bc42def5b3)
+
 
 ### pre-defined steps
 
 The request lifecycle is pre-defined by the hapi framework.<br/>
-The steps in the above diagram marked with a single asterisk (*) are the pre-defined steps. 
+The steps in the first diagram marked with a single asterisk (*) are the pre-defined steps. 
 These steps do not operate in a vacuum. They respond to how you configure the server, connections, and routes. 
 
 
 ### extending the lifecycle
 
 The pre-defined steps of the lifecycle can be extended by the developer with extensions.
-Find the six request lifecycle extension points in the above diagram.  They are:
+Find the six request lifecycle extension points in the first diagram.  They are:
 * 'onRequest'
 * 'onPreAuth' 
 * 'onPostAuth' 
@@ -29,8 +41,8 @@ Find the six request lifecycle extension points in the above diagram.  They are:
 An extension point is a stage in the request lifecycle where extensions can be added.
 Extension points are hooks that provide an interface for programmers to add custom code 
 to a specific step in the lifecycle. hapi refers to the added custom code as ***events***.
-There only two extension points guaranteed to be called with every request. The above diagram marks 
-the two extension points guaranteed to be called with double asterisks (**).
+There only two extension points guaranteed to be called with every request. The first diagram marks 
+extensions guaranteed to be called with double asterisks (**).
 
 
 ### What is an extension? 
@@ -61,19 +73,12 @@ Note: not just one event but an array of events can be added at an extension poi
 
 ### Beauty of hapi request lifecycle
 Hapi gives the developer the ability to extend the request lifecycle on:  
-server connections, plugins, and routes. Plus, the added extensions (events) can be configured to execute at one of the
-six different extension points in the request lifecycle.  At the completion of [assignment9](../assignments/a0.0.9.md) our project has ***connection-level*** and ***route level***  extensions.
+server connections, plugins, and routes. Plus, the added extensions (events) are configured to execute at one of the
+six different extension points in the request lifecycle.  At the completion of [assignment9](../assignments/a0.0.9.md) our project has ***connection-level*** and ***route level***  extensions
+which extend the `onRequest` and `onPreResponse` extension points.
 
-### Lifecycle Details: 
-[hapi lifecycle documentation](https://hapijs.com/api#request-lifecycle) shows there are fifteen pre-defined steps in the lifecycle.
-Those steps can be grouped into six general steps. Below Lifecycle Details Diagram shows all fifteen steps 
-grouped into the six categories used in the previous diagram.  Or, checkout the [documenation](https://hapijs.com/api#request-lifecycle).
-### Lifecycle Details Diagram
-![LifeCycleDetails](../assets/images/lifecycleDetailsDiagram.png)
 
 ### References:
-* I believe Matt Harrison in Mannings hapijs book also groups the fifteen predefined steps into six groups.
-  Think @AdriVanHoudt references this work [here](https://gist.github.com/AdriVanHoudt/562f537ba48301bac76fb3bc42def5b3)
 * Documentation 
   - [lifecycle](https://hapijs.com/api#request-lifecycle)
   - [server.ext(events)](https://hapijs.com/api#serverextevents) - Register an array of event objects on ***connection-level*** extension point. 
