@@ -8,7 +8,7 @@ Each incoming request passes through six general pre-defined steps. These six st
 
 
 The six general pre-defined steps do not operate in a vacuum. They respond to how you configure the server, connections, and routes. 
-[hapi lifecycle documentation](https://hapijs.com/api#request-lifecycle) gives more details and describes fifteen pre-defined steps.  
+[hapi lifecycle documentation](https://hapijs.com/api#request-lifecycle) gives more details and describes fifteen pre-defined steps versus six.
 The below diagram shows all fifteen pre-defined steps, the six general pre-defined steps, and the six optional extension points.  
 
 ### Lifecycle Details Diagram
@@ -72,25 +72,36 @@ Note:
 ### Beauty of the hapi request lifecycle
 Hapi gives the developer the ability to extend the request lifecycle on:  
 server connections, plugins, and routes. Plus, the added extension's (events) are configured to execute at one of the
-six different extension points in the request lifecycle.  At the completion of [assignment9](../assignments/a0.0.9.md) our project has ***connection-level*** and ***route level***  extensions
-which extend the request lifecycle at the `onRequest` and `onPreResponse` extension points.
+six different extension points of the request lifecycle. Every time an extension is added the developer determines two crucial issues:
+* **extension-level**<br/> 
+  Determines which route(s) will have the extension applied:
+  - all routes of a specific server.connection - *connection-level*
+  - all routes of a specific plugin - *plugin-level*
+  - or a specific route - *route-level*
+* **extension-point**<br/>
+  Determines where in the request lifecycle an extension will be added. 
+
+To see a **connection-level** extension changed to a **route-level** extension study [assignment9](../assignments/a0.0.9.md).
+Once you understand the core concepts of [assignment9](../assignments/a0.0.9.md) try exploring [route prerequisites](https://hapijs.com/api#route-prerequisites).
+
+hapi extending!
 
 
-### References:
+### Helpful References:
 * Documentation 
   - [lifecycle](https://hapijs.com/api#request-lifecycle)
   - [server.ext(events)](https://hapijs.com/api#serverextevents) - Register an array of event objects on ***connection-level*** extension point. 
   - [server.ext(event, method, [options])](https://hapijs.com/api#serverextevent-method-options) - Register a single extension event as a ***connection-level*** extension point.
-
-* Others:
   - What is a hook?
     A hook is functionality provided by software for users of that software to have their own code called under certain circumstances. 
     That code can augment or replace the current code. 
     (source: [SO](https://stackoverflow.com/questions/467557/what-is-meant-by-the-term-hook-in-programming))
+
+* Others:
   - @devinivy [tutorial covering realms and extensions](https://github.com/hapijs/discuss/issues/241) 
   - [route prerequisites](https://hapijs.com/api#route-prerequisites)<br/>
     hapi allows the developer to add [pre-requisites](https://hapijs.com/api#route-prerequisites) to routes! 
     route pre-requisites are route-level extensions executed before the handler.  
-
-
+  - Matt Harrison 's [hapijs book](https://www.manning.com/books/hapi-js-in-action)
+  - @AdriVanHoudt 's [nodeconf talk proposal](https://gist.github.com/AdriVanHoudt/562f537ba48301bac76fb3bc42def5b3)
 
