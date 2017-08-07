@@ -54,10 +54,10 @@ Note:
 * Not just one event but an array of events can be added at an extension point with [server.ext(events)](https://hapijs.com/api#serverextevents).
 * For an example of using [route options](https://hapijs.com/api#route-options) to add an extension see [assignment9](../assignments/a0.0.9.md).
 
-### Three levels of extensions:
-@todo write gentle introduction to extension-levels.
+### Three extension-levels
+**extension-levels** determine which route(s) will have the extension applied. The three extension-levels are:
 * **connection-level**<br/>
-  Extends the lifecycle of all requests made to any route on a specific server connection.<br/>
+  Extends the lifecycle of requests made to any route on a specific server connection.<br/>
   Our project has two connections:
   - `const web = server.select('web');`
   - `const webTls = server.select('web-tls');`
@@ -65,21 +65,18 @@ Note:
   - `lib/index.js` applies ***connection-level*** extensions to the `web` and `webTls` connections.
 
 * **plugin-level**<br/>
-  Extends the lifecycle of all requests made to routes within a plugin.
+  Extends the lifecycle of requests made to routes within a plugin.
 * **route-level**<br/>
   Extends the lifecycle of requests made to a specific route.
 
 ### Beauty of the hapi request lifecycle
 Hapi gives the developer the ability to extend the request lifecycle on:  
-server connections, plugins, and routes. Plus, the added extension's (events) are configured to execute at one of the
-six different extension points of the request lifecycle. Every time an extension is added the developer determines two crucial issues:
+server connections, plugins, and routes. Added extensions (events) are configured to execute at one of the
+six different extension points of the request lifecycle. Every time the developer adds an extension, two crucial issues must be determined:
 * **extension-level**<br/> 
-  Determines which route(s) will have the extension applied:
-  - all routes of a specific server.connection - *connection-level*
-  - all routes of a specific plugin - *plugin-level*
-  - or a specific route - *route-level*
+  Determines which route(s) will have the extension applied.
 * **extension-point**<br/>
-  Determines where in the request lifecycle an extension will be added. 
+  Determines where in the request lifecycle the extension will be added. 
 
 To see a **connection-level** extension changed to a **route-level** extension study [assignment9](../assignments/a0.0.9.md).
 Once you understand the core concepts of [assignment9](../assignments/a0.0.9.md) try exploring [route prerequisites](https://hapijs.com/api#route-prerequisites).
@@ -92,12 +89,12 @@ hapi extending!
   - [lifecycle](https://hapijs.com/api#request-lifecycle)
   - [server.ext(events)](https://hapijs.com/api#serverextevents) - Register an array of event objects on ***connection-level*** extension point. 
   - [server.ext(event, method, [options])](https://hapijs.com/api#serverextevent-method-options) - Register a single extension event as a ***connection-level*** extension point.
+
+* Others:
   - What is a hook?
     A hook is functionality provided by software for users of that software to have their own code called under certain circumstances. 
     That code can augment or replace the current code. 
     (source: [SO](https://stackoverflow.com/questions/467557/what-is-meant-by-the-term-hook-in-programming))
-
-* Others:
   - @devinivy [tutorial covering realms and extensions](https://github.com/hapijs/discuss/issues/241) 
   - [route prerequisites](https://hapijs.com/api#route-prerequisites)<br/>
     hapi allows the developer to add [pre-requisites](https://hapijs.com/api#route-prerequisites) to routes! 
