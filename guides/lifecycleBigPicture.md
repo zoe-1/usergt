@@ -99,6 +99,14 @@ hapi extending!
   - [route prerequisites](https://hapijs.com/api#route-prerequisites)<br/>
     hapi allows the developer to add [pre-requisites](https://hapijs.com/api#route-prerequisites) to routes! 
     route pre-requisites are route-level extensions executed before the handler.  
-  - Matt Harrison 's [hapijs book](https://www.manning.com/books/hapi-js-in-action)
-  - @AdriVanHoudt 's [nodeconf talk proposal](https://gist.github.com/AdriVanHoudt/562f537ba48301bac76fb3bc42def5b3)
 
+### Credits
+  - @AdriVanHoudt <br/>
+    His [nodeconf talk proposal](https://gist.github.com/AdriVanHoudt/562f537ba48301bac76fb3bc42def5b3) inspired the idea for [assignment9](../assignments/a0.0.9.md) which 
+    caused me to write this introduction to the request lifecycle. assignment9 assumes a basic understanding of the the request lifecycle.
+  - Matt Harrison @mtharrison<br/>
+    * Explanation on [plugin-level and route-level extensions](https://stackoverflow.com/questions/37424079/how-to-apply-a-hapi-js-plugin-to-specific-routes) was helpful.
+    * His book [hapijs in action](https://www.manning.com/books/hapi-js-in-action) I believe is the source for the graphic used in @AdrVanHoudt 's proposal which
+      inpired the creation of [assignment9](../assignments/a0.0.9.md).  Have not read the book but looked over the section on tests in a Barns and Noble once. 
+      This graphic partially inspired me to make the graphics in this document. (@todo confirm & clarify this issue) 
+      
