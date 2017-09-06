@@ -14,9 +14,11 @@ validate.utils.js
 ```
 
 #### Utils API
-User.utils.bcrypt.compare<br/>
-User.utils.bcrypt.hash<br/>
-User.utils.user.checkLockout<br/>
+User.utils.bcrypt.compare(submittedPassword, userDocument.password, callback)<br/>
+User.utils.bcrypt.hash(plainTextPassword, callback)<br/>
+User.utils.user.checkLockout(userDocument, callback)<br/>
+User.utils.validate.user(userRecord, callback)<br/>
+User.utils.validate.usernamePassword(username, password, callback)<br/>
 
 #### Example
 ```

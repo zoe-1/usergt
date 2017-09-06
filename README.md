@@ -5,6 +5,12 @@ manage user data logic
 
 [API](./API.md)
 
+User management logic: create, destroy, read, authenticate, brute force attack protection, lockout.
+Design pattern which creates & persists a database connection and contains all database request logic in one module.
+This design de-couples database logic from an application and allows usergt to be easily used in any nodejs project.
+Just configure the db connection settings, generate a usergt object then any application can consume usergt’s methods.                                                     
+Depends on: Rethinkdb and penseur (https://www.npmjs.com/package/penseur). 
+
 ### Brute force protection:
 
 * bcrypt password hashing

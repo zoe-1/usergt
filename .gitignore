@@ -17,4 +17,4 @@ coverage
 coverage.*
 lib-cov
 .devidea
-
+package-lock.json
