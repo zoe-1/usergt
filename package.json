@@ -35,6 +35,7 @@
   },
   "devDependencies": {
     "code": "^5.1.2",
+    "items": "^2.1.1",
     "lab": "^15.1.2"
   }
 }
