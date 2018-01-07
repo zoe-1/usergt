@@ -1,15 +1,9 @@
 # usergt
 
-manage user data logic
-[Rethinkdb](https://rethinkdb.com/), [Penseur](https://github.com/hueniverse/penseur)
-
 [API](./API.md)
 
 User management logic: create, destroy, read, authenticate, brute force attack protection, lockout.
-Design pattern which creates & persists a database connection and contains all database request logic in one module.
-This design de-couples database logic from an application and allows usergt to be easily used in any nodejs project.
-Just configure the db connection settings, generate a usergt object then any application can consume usergt’s methods.                                                     
-Depends on: Rethinkdb and penseur (https://www.npmjs.com/package/penseur). 
+Depends on: [Rethinkdb](https://rethinkdb.com/), [Penseur](https://github.com/hueniverse/penseur)
 
 ### Brute force protection:
 
@@ -31,22 +25,8 @@ authenticate filters out invalid username and passwords to avoid the database re
 
 User objects have a `scope` key.
 The scope key is an array of labels. For example, `['admin', 'user']`.
+hapijs style.
 
-* hapijs scopes
-`hapi` uses scopes to determine authorization for actions on routes.
-Scope values need to be set in the user record object and hapi route.
-Scopes can be viewed as role labels of RBAC.
-  - userRecord object `scope` array.
-    A valid userRecord object has a `scope` key which is an array of scope labels.
-  - hapi route scope array
-    hapi routes that require authorization are configured with a scopes array of labels/roles.
-    If a user's scopes do not match scope on a route the user is denied access.
-
-* Adusting scope validations
-  Tests assume two scopes exist: `admin` `user`.
-  To add other scopes modify the validation schema, change
-  `scope: Joi.array().items(Joi.string().valid('admin', 'user').required())`
-  in **./lib/user/validate.js**.
 
 * Read more about hapi scopes
   - [route-options](https://hapijs.com/api#route-options).
@@ -65,7 +45,7 @@ Uses boom to build and return error objects.
 
 ### Tests
 
-100% coverage using [jest](https://facebook.github.io/jest/)
+100% coverage using [lab](https://github.com/hapijs/lab) & code](https://github.com/hapijs/code)
 
 ### License
 BSD-3-Clause
