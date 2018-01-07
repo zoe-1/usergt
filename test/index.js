@@ -141,6 +141,37 @@ describe('usergt.create', () => {
             throw error;
         }
     });
+
+    it('fails to create user record. username too long.', async () => {
+
+        const original = newUser.username;
+
+        newUser.username = '88888888888888888888888888888888888888888' +
+                           '99999999999999999999999999999999999999999';
+
+        try {
+
+            const usergt = internals.usergt = await Usergt.init(Config);    // Done at startup.
+
+            const record = await usergt.create(newUser);
+
+            await usergt.close();
+
+            expect(record.length).to.equal(36);
+        }
+        catch (error) {
+
+            // console.log('WATCH ERROR:   ' + JSON.stringify(error));
+            // console.log('WATCH ERROR 2: ' + JSON.stringify(error.output));
+
+            expect(error.output.payload.statusCode).to.equal(422);
+            expect(error.output.payload.error).to.equal('Unprocessable Entity');
+            expect(error.output.payload.message).to.equal('invalid user record');
+
+            internals.usergt.close();
+            newUser.username = original;
+        }
+    });
 });
 
 describe('usergt.destroy', () => {
@@ -307,6 +338,38 @@ describe('usergt.authenticate', () => {
             expect(error.output.statusCode).to.equal(401);
             expect(error.output.payload.error).to.equal('Unauthorized');
             expect(error.output.payload.message).to.equal('password incorrect');
+        }
+    });
+
+    it('fails to authenticate user, invalid username', async () => {
+
+        // invalid credentials which fail Joi validation throw errors wihout
+        // hitting the database for a read. This is what happens here.
+
+        try {
+
+            Config.test = false;  // create connection do not purge db on connect (establish).
+
+            const usergt = internals.usergt = await Usergt.init(Config);    // Done at startup.
+
+            const original = invalidPasswordRecord.username;
+
+            invalidPasswordRecord.username = '88888888888888888888888888888888888888888' +
+                                             '99999999999999999999999999999999999999999';
+
+            await usergt.authenticate(invalidPasswordRecord.username, invalidPasswordRecord.password);
+
+            invalidPasswordRecord.username = original;
+
+        }
+        catch (error) {
+
+            Config.test = true;
+            await internals.usergt.close();
+
+            expect(error.output.statusCode).to.equal(401);
+            expect(error.output.payload.error).to.equal('Unauthorized');
+            expect(error.output.payload.message).to.equal('username incorrect');
         }
     });
 
@@ -785,7 +848,7 @@ describe('bcrypt', () => {
 });
 
 
-describe('query coverage', () => {
+describe('query & utils coverage', () => {
 
     it('fails to set lockout, this.connect failure (Query.user.setLockout)', async () => {
 
@@ -850,6 +913,35 @@ describe('query coverage', () => {
             // console.log('WATCH ERROR 2: ' + JSON.stringify(error));
 
             expect(error.data.message).to.equal('disabled this.db.user.insert');
+            expect(error.output.payload.statusCode).to.equal(500);
+            expect(error.output.payload.error).to.equal('Internal Server Error');
+            expect(error.output.payload.message).to.equal('An internal server error occurred');
+
+            internals.usergt.close();
+        }
+    });
+
+    it('fails to resetLoginCount, this.db undefined (Query.user.resetLoginCount)', async () => {
+
+        try {
+
+            Config.test = true;
+
+            const usergt = internals.usergt = await Usergt.init(Config);    // Done at startup.
+
+            const original = usergt.db;
+
+            delete usergt.db;
+
+            await Query.user.resetLoginCount.call(usergt, 999);
+
+            usergt.db = original;
+        }
+        catch (error) {
+
+            // console.log('WATCH ERROR 1: ' + JSON.stringify(error.data.message));
+            // console.log('WATCH ERROR 2: ' + JSON.stringify(error));
+
             expect(error.output.payload.statusCode).to.equal(500);
             expect(error.output.payload.error).to.equal('Internal Server Error');
             expect(error.output.payload.message).to.equal('An internal server error occurred');
