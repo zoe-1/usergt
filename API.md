@@ -5,8 +5,8 @@
 - [authenticate](#authenticate)
 - [create](#create)
 - [destroy](#destroy)
-[expireLockout](#expireLockout)
-[usergt](#usergt)
+- [expireLockout](#expirelockout)
+- [usergt](#usergt)
 
 
 #### `config()`
@@ -88,13 +88,22 @@ Construct instance of usergt<br/>
     ```
 
 
-#### `destroy()` `await destroy(documentId)`
+#### `destroy()` 
+* `await destroy(documentId)`
 * example
 ```
     const destroyResultId = await usergt.destroy(userRecordID);
 ```
 
-#### `usergt()` `usergt`
+#### `expirelockout()` 
+* `await expireLockout(username)`
+* example
+```
+    const userRecord = await usergt.expireLockout(username);
+```
+
+#### `usergt()` 
+* `usergt`
 * You can do creative things with the usergt object. 
   All penseur methods can be accessed with `usergt.db`. 
 ```
