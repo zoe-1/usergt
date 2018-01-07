@@ -70,7 +70,7 @@ describe('usergt init', () => {
 
             const usergt = internals.usergt = await Usergt.init(Config);    // Done at startup.
 
-            expect(Object.keys(usergt).length).to.equal(9);
+            expect(Object.keys(usergt).length).to.equal(10);
 
         }
         catch (error) {
@@ -88,7 +88,7 @@ describe('usergt init', () => {
 
         Config.test = true;
 
-        expect(Object.keys(usergt).length).to.equal(9);
+        expect(Object.keys(usergt).length).to.equal(10);
     });
 
     it('builds penseur connection (connect versus establish)', async () => {
@@ -98,7 +98,7 @@ describe('usergt init', () => {
         const usergt = internals.usergt = await Usergt.init(Config);    // Done at startup.
 
         Config.test = true;
-        expect(Object.keys(usergt).length).to.equal(9);
+        expect(Object.keys(usergt).length).to.equal(10);
     });
 
     it('fails to generate penseur connection', async () => {
@@ -143,6 +143,56 @@ describe('usergt.create', () => {
     });
 });
 
+describe('usergt.destroy', () => {
+
+    it('successfully destroys user document', async () => {
+
+        Config.test = true;
+
+        const usergt = internals.usergt = await Usergt.init(Config);    // Done at startup.
+
+        const newUserRecordID = await usergt.create(newUser);
+
+        expect(newUserRecordID.length).to.equal(36);
+
+        const destroyResultId = await usergt.destroy(newUserRecordID);
+
+        expect(newUserRecordID).to.equal(destroyResultId);
+
+        const result = await usergt.db.user.get(newUserRecordID);
+
+        expect(result).to.equal(null);
+
+        await usergt.close();
+    });
+
+    it('fails to destroy document, ', async () => {
+
+        Config.test = true;
+
+        try {
+
+            const usergt = internals.usergt = await Usergt.init(Config);    // Done at startup.
+
+            const newUserRecordID = await usergt.create(newUser);
+
+            expect(newUserRecordID.length).to.equal(36);
+
+            await usergt.disable('user', 'update');
+
+            await usergt.destroy(newUserRecordID);
+
+            await usergt.close();
+        }
+        catch (error) {
+
+            expect(error.data.message).to.equal('disabled this.db.user.update');
+            expect(error.output.payload.statusCode).to.equal(500);
+            expect(error.output.payload.error).to.equal('Internal Server Error');
+            expect(error.output.payload.message).to.equal('An internal server error occurred');
+        }
+    });
+});
 
 describe('usergt.authenticate', () => {
 
@@ -179,6 +229,34 @@ describe('usergt.authenticate', () => {
 
             internals.usergt.close();
             throw error;
+        }
+    });
+
+    it('fails to authenticate user, findByUsername throw error', async () => {
+
+        try {
+
+            Config.test = false;  // create connection do not purge db on connect (establish).
+
+            const usergt = internals.usergt = await Usergt.init(Config);    // Done at startup.
+
+            const original = usergt.db;
+
+            delete usergt.db;
+
+            await usergt.authenticate(goodUserRecord.username, goodUserRecord.password);
+
+            usergt.db =  original;
+
+            await usergt.close();
+        }
+        catch (error) {
+
+            // internals.usergt.close();
+            expect(error.output.statusCode).to.equal(500);
+            expect(error.output.payload.error).to.equal('Internal Server Error');
+            expect(error.output.payload.message).to.equal('An internal server error occurred');
+            // throw error;
         }
     });
 
@@ -503,7 +581,6 @@ describe('usergt.authenticate lockout:', () => {
             expect(error.output.payload.error).to.equal('Not Found');
             expect(error.output.payload.message).to.equal('Expire lockout failed. username does not exist.');
         }
-
     });
 
     it('fails to expire lockout. db.connect fails.', async () => {
@@ -522,6 +599,31 @@ describe('usergt.authenticate lockout:', () => {
             await usergt.expireLockout(badUserRecord.username);
 
             usergt.connected = original;
+        }
+        catch (error) {
+
+            expect(error.output.statusCode).to.equal(500);
+            expect(error.output.payload.error).to.equal('Internal Server Error');
+            expect(error.output.payload.message).to.equal('An internal server error occurred');
+        }
+    });
+
+    it('fails to expire lockout. this.db undefined.', async () => {
+
+        try {
+
+            Config.test = false; // do not destroy and rebuid db
+
+
+            const usergt = internals.usergt = await Usergt.init(Config);    // Done at startup.
+
+            const original = usergt.db;
+
+            delete usergt.db;
+
+            await usergt.expireLockout(badUserRecord.username);
+
+            usergt.db = original;
         }
         catch (error) {
 
@@ -682,3 +784,77 @@ describe('bcrypt', () => {
     });
 });
 
+
+describe('query coverage', () => {
+
+    it('fails to set lockout, this.connect failure (Query.user.setLockout)', async () => {
+
+        try {
+
+            const usergt = internals.usergt = await Usergt.init(Config);    // Done at startup.
+
+            const original = usergt.connected;
+
+            usergt.connected = false;
+
+            await Query.user.setLockout.call(usergt, 999);
+
+            usergt.connected = original;
+        }
+        catch (error) {
+
+            internals.usergt.close();
+            expect(error.output.statusCode).to.equal(500);
+            expect(error.output.payload.error).to.equal('Internal Server Error');
+            expect(error.output.payload.message).to.equal('An internal server error occurred');
+        }
+    });
+
+    it('fails to set lockout, this.db failure (Query.user.setLockout)', async () => {
+
+        try {
+
+            const usergt = await Usergt.init(Config);    // Done at startup.
+
+            const original = usergt.db;
+
+            delete usergt.db;
+
+            await Query.user.setLockout.call(usergt, 999);
+
+            usergt.db = original;
+        }
+        catch (error) {
+
+            expect(error.output.statusCode).to.equal(500);
+            expect(error.output.payload.error).to.equal('Internal Server Error');
+            expect(error.output.payload.message).to.equal('An internal server error occurred');
+        }
+    });
+
+    it('fails to create user, this.db.user.insert failure (Query.user.create)', async () => {
+
+        try {
+
+            Config.test = true;
+
+            const usergt = internals.usergt = await Usergt.init(Config);    // Done at startup.
+
+            await usergt.disable('user', 'insert');
+
+            await Query.user.create.call(usergt, 'mock user record');
+        }
+        catch (error) {
+
+            // console.log('WATCH ERROR 1: ' + JSON.stringify(error.data.message));
+            // console.log('WATCH ERROR 2: ' + JSON.stringify(error));
+
+            expect(error.data.message).to.equal('disabled this.db.user.insert');
+            expect(error.output.payload.statusCode).to.equal(500);
+            expect(error.output.payload.error).to.equal('Internal Server Error');
+            expect(error.output.payload.message).to.equal('An internal server error occurred');
+
+            internals.usergt.close();
+        }
+    });
+});
