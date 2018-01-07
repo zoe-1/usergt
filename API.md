@@ -1,143 +1,101 @@
 # usergt api
 
-#### `new User.Gt(configs)`
+- [example](#example)
+- [configs](#config)
+- [create](#create)
+- [destroy](#destroy)
+[expireLockout](#expireLockout)
+[usergt](#usergt)
+
+
+#### `config()`
 
 Construct instance of usergt<br/>
 
-* `configs`
+* `configs()`
   ```
-  const Config = {
-    dbname: String database name required. ex) 'usergt',
-    connection: {
-        host: String, defaults to 'localhost',
-        port: Number default is 28015,
-        test: Boolean optional,
-        user: String defaults to 'admin' optional,
-        password: String optional,
-        timeout: Number defaults to 20 optional,
-        reconnectTimeout: Number min(1) allows (false) defaults to 100)
-    }
-  } 
+    const Config = {
+        dbname: 'usergt',
+        connection: {
+            host: 'localhost',
+            port: 28015
+        },
+        test: true
+    };
   ```
 
-* Example<br/>
-  ```
-  // include usergt
+#### `example()`
+ * Example
+   ```js
+   // include usergt
+ 
+   const Usergt = ('path/to/usergt/lib');
+ 
+   const Config = {
+       dbname: 'usergt',
+       connection: {
+           host: 'localhost',
+           port: 28015
+       },
+       test: true
+   };
+ 
+   try {
+ 
+        const usergt = internals.usergt = await Usergt.init(Config);    // Done at startup.
+ 
+        const record = await usergt.create(newUser);
+ 
+        await usergt.close();
+ 
+        expect(record.length).to.equal(36);
+   }
+        catch (error) {
+ 
+            internals.usergt.close();
+            throw error;
+   }
+   ```
 
-  const User = ('path/to/usergt/lib');
-
-  // set configs
-
-  const Config = {
-      dbname: 'usergt',
-      connection: {
-          host: 'localhost',
-          port: 28015
-      }
-  };
-
-  const usergt = User.gt(Config);
-
-  usergt.establish((err) => {
-  
-
-        expect(err).toBe(null);
-
-        const newUserRecord = {
-            username: 'zoelogic',
-            email: 'boom@zoelogic.com',
-            password: 'paSS-w0rd_4test',
-            scope: ['user']
-        };
-
-        usergt.create(newUserRecord, (err, newUserId) => {
-
-            expect(err).toBe(null);
-            expect(newUserId.length).toBe(36);
-            usergt.db.close(done);
-        });
-  });
-  ```
-
-#### `authenticate(username, password, callback)`
+#### `authenticate()` `await usergt.authenticate(username, password)`
 * `username` of existing user.
 * `password` of existing user.
-* `callback(err, authenticedUserRecord)`
-  - `err` isBoom on error else null.
-  - `authenticedUserRecord` userRecord of authenticated user.
 * Lockout Details
   - After ten failed login attempts user account is locked for twenty four hours.<br/>
     The user account cannot be successfully authenticated until the lockout expires.
 
-#### `create(userRecord, callback)`
+#### `create()` `await usergt.create(userRecord)`
 * `userRecord`
-  - `username`
-    * must be unique
-  - `password` 
-    * minimum three lowercase letters
-    * minimum two uppercase letters
-    * minimum two digits 
-    * minimum two special characters. The following are allowed: `~\`!@#$%^&*()-_+={}][|\:;"'<>.,?/`
   - `sample`<br/>
-    ```
-    const newUserRecord = {
+    ```js
+    const newUser = {
         username: 'zoelogic',
-        email: 'js@zoelogic.com',
-        password: 'paSS-w0rd_4test',
-        scope: ['user']
+        email: 'zoe@zoelogic.com',
+        password: 'BiSyy44_+556677',
+        // password: 'dasfadsf',
+        scope: ['user', 'admin'],
+        created: Date.now(),
+        loginCount: 0,
+        lockUntil:  Date.now() - (60 * 1000)
     };
+
+    const record = await usergt.create(newUser);
     ```
 
-* `callback(err, newUserId)`
-  - `err` isBoom if error occured else null.
-  - `newUserId` of newly created record returned.
 
-
-#### `destroy(documentId, callback)`
-* `documentId`
-  - documentId of record to be destroyed. 
-* `callback`
-  - `err` isBoom if error else null.
-  - `result` destroyed record message.<br/>
-    `Destroyed document id: xxxx-xxxx-xxx`
-
-#### `establish(callback)`
-Sets tables configurations for penseur instance and makes database connection object.<br/>
-Must be executed for usergt methods to work because it creates the db connection object
-usergt methods use to make Rethinkdb queries. Thanks to penseur the connection is persisted.
-
-* `callback(err)`
-  - `err` isBoom if error else `null` upon success.
-* Example
+#### `destroy()` `await destroy(documentId)`
+* example
 ```
-const User = require('./lib');
-
-const usergt = new User.Gt(Config);
-
-usergt.establish((err) => {
-
-    expect(err).toBe(null);
-
-    const username = 'zoelogic';
-    const password = 'paSS-w0rd_4test';
-
-    usergt.authenticate(username, password, (err, authenticedUserRecord) => {
-
-        expect(authenticedUserRecord.username).toBe('zoelogic');
-        expect(authenticedUserRecord.loginAttempts).toBe(0);
-        expect(authenticedUserRecord.lockUntil).toBeLessThan(Date.now());
-        return usergt.db.close(done);
-    });
-});
+    const destroyResultId = await usergt.destroy(userRecordID);
 ```
-   
-#### `expireLockout(userDocumentId, callback)`
-* `userDocumentId`
-  - documentId of user record to be destroyed. 
-* `callback(err)`
-  - `err` isBoom if error else `null` upon success.
 
-
-
-[Query API](APIQuery.md)
-[Utils API](APIUtils.md)
+#### `usergt()` `usergt`
+* You can do creative things with the usergt object. 
+  All penseur methods can be accessed with `usergt.db`. 
+```
+    // usergt.db
+    // contains pensuer object.
+    // usergt.db.table_name.method_name 
+    // below retrieves a record from the db.
+    const result = await usergt.db.user.get(userRecordID);
+```
