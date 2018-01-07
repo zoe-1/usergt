@@ -2,6 +2,7 @@
 
 - [example](#example)
 - [configs](#config)
+- [authenticate](#authenticate)
 - [create](#create)
 - [destroy](#destroy)
 [expireLockout](#expireLockout)
@@ -57,14 +58,18 @@ Construct instance of usergt<br/>
    }
    ```
 
-#### `authenticate()` `await usergt.authenticate(username, password)`
+#### `authenticate()` 
+
+`await usergt.authenticate(username, password)`
 * `username` of existing user.
 * `password` of existing user.
 * Lockout Details
   - After ten failed login attempts user account is locked for twenty four hours.<br/>
     The user account cannot be successfully authenticated until the lockout expires.
 
-#### `create()` `await usergt.create(userRecord)`
+
+#### `create()` 
+* `await usergt.create(userRecord)`
 * `userRecord`
   - `sample`<br/>
     ```js
