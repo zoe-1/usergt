@@ -7,7 +7,7 @@
     "lib": "lib"
   },
   "scripts": {
-    "test": "lab -a code -t 100 -L -m 3000",
+    "test": "lab -a code -t 100 -L -m 0 -v",
     "start": "node ./lib/consumer.js",
     "purge": "node ./lib/purge.js"
   },
