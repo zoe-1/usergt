@@ -232,6 +232,31 @@ describe('usergt.authenticate', () => {
         }
     });
 
+    it('fails to authenticate username does not exist', async () => {
+
+        try {
+
+            Config.test = false;  // create connection do not purge db on connect (establish).
+
+            const usergt = internals.usergt = await Usergt.init(Config);    // Done at startup.
+
+            const original = goodUserRecord.username;
+            goodUserRecord.username = 'notexists';
+
+            await usergt.authenticate(goodUserRecord.username, goodUserRecord.password);
+
+            goodUserRecord.username = original;
+        }
+        catch (error) {
+
+            expect(error.output.statusCode).to.equal(404);
+            expect(error.output.payload.error).to.equal('Not Found');
+            expect(error.output.payload.message).to.equal('username does not exist');
+
+            internals.usergt.close();
+        }
+    });
+
     it('fails to authenticate user, findByUsername throw error', async () => {
 
         try {
@@ -306,32 +331,7 @@ describe('usergt.authenticate', () => {
         }
     });
 
-    it('fails to authenticate username does not exist', async () => {
-
-        try {
-
-            Config.test = false;  // create connection do not purge db on connect (establish).
-
-            const usergt = internals.usergt = await Usergt.init(Config);    // Done at startup.
-
-            const original = goodUserRecord.username;
-            goodUserRecord.username = 'notexists';
-
-            await usergt.authenticate(goodUserRecord.username, goodUserRecord.password);
-
-            goodUserRecord.username = original;
-        }
-        catch (error) {
-
-            expect(error.output.statusCode).to.equal(404);
-            expect(error.output.payload.error).to.equal('Not Found');
-            expect(error.output.payload.message).to.equal('username does not exist');
-
-            internals.usergt.close();
-        }
-    });
-
-    it('fails to authenticate because of db.connect failure', async () => {
+    it('fails to authenticate, db.connect failure', async () => {
 
         try {
 
